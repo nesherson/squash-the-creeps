@@ -2,8 +2,14 @@ using Godot;
 
 public partial class Player : CharacterBody3D
 {
-    [Export] public int Speed { get; set; } = 14;
-    [Export] public int FallAcceleration { get; set; } = 75;
+    [Export] 
+    public int Speed { get; set; } = 14;
+    [Export] 
+    public int FallAcceleration { get; set; } = 75;
+    [Export]
+    public int JumpImpulse { get; set; } = 20;
+    [Export]
+    public int BounceImpulse { get; set; } = 16;
     
     private Vector3 _targetVelocity = Vector3.Zero;
 
@@ -44,6 +50,28 @@ public partial class Player : CharacterBody3D
         if (!IsOnFloor())
         {
             _targetVelocity.Y -= FallAcceleration * (float)delta;
+        }
+
+        if (IsOnFloor() && Input.IsActionPressed("jump"))
+        {
+            _targetVelocity.Y = JumpImpulse;
+        }
+
+        for (var i = 0; i < GetSlideCollisionCount(); i++)
+        {
+            var collision = GetSlideCollision(i);
+
+            if (collision.GetCollider() is not Mob mob) 
+                continue;
+            
+            if (!(Vector3.Up.Dot(collision.GetNormal()) > 0.1f)) 
+                continue;
+            
+            mob.Squash();
+            
+            _targetVelocity.Y = BounceImpulse;
+
+            break;
         }
         
         Velocity = _targetVelocity;
