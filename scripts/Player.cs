@@ -81,9 +81,8 @@ public partial class Player : CharacterBody3D
 		MoveAndSlide();
 	}
 
-	private void OnMobDetectorBodyEntered()
+	public void OnMobDetectorBodyEntered(Node3D body)
 	{
-		GD.Print("Trigger");
 		Die();
 	}
 
